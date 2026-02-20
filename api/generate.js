@@ -50,7 +50,7 @@ export default async function handler(req, res) {
   try {
     const groq = new Groq({ apiKey });
 
-    const recentHistory = (history || []).slice(-10).map((msg) => ({
+    const recentHistory = (history || []).slice(-4).map((msg) => ({
       role: msg.sender === "user" ? "user" : "assistant",
       content: msg.text,
     }));
@@ -61,9 +61,9 @@ export default async function handler(req, res) {
         ...recentHistory,
         { role: "user", content: message },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       temperature: 0.7,
-      max_tokens: 150,
+      max_tokens: 120,
     });
 
     const responseText = completion.choices[0]?.message?.content || "I'm here with you.";
