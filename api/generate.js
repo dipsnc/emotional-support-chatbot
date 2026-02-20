@@ -1,9 +1,5 @@
 import Groq from "groq-sdk";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 const SYSTEM_PROMPT = `
 You are MindEase, a compassionate emotional support companion.
 
@@ -38,6 +34,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
+  // Check for API Key
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    console.error("GROQ_API_KEY is missing from environment variables.");
+    return res.status(500).json({ error: "API Key not configured on server." });
+  }
+
   const { message, tone, history } = req.body;
 
   if (!message) {
@@ -45,6 +48,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    const groq = new Groq({ apiKey });
+
     const recentHistory = (history || []).slice(-10).map((msg) => ({
       role: msg.sender === "user" ? "user" : "assistant",
       content: msg.text,
@@ -65,7 +70,10 @@ export default async function handler(req, res) {
     
     return res.status(200).json({ text: responseText, isCrisis: false });
   } catch (error) {
-    console.error("Groq API Error:", error);
-    return res.status(500).json({ error: "Failed to generate response" });
+    console.error("Groq API Error:", error.message || error);
+    return res.status(500).json({ 
+      error: "Failed to generate response", 
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 }
