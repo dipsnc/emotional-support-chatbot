@@ -1,3 +1,14 @@
+export const ROTATING_AFFIRMATIONS = [
+  "You are enough just as you are.",
+  "This feeling is temporary.",
+  "You are stronger than you know.",
+  "Breathe. You are safe here.",
+  "One step at a time."
+];
+
+export const CRISIS_KEYWORDS = ["die", "suicide", "hurt myself", "end my life", "kill myself"];
+export const HELPLINE_NUMBER = "1800-599-0019";
+
 export const getResponse = async (message, tone = 'gentle', history = []) => {
   const lowerMsg = message.toLowerCase();
   
